@@ -9,7 +9,7 @@ const getUsuarios = async (req, res) => {
         Usuario
             .find({}, 'nombre email role google img')
             .skip(desde)
-            .limit(4),
+            .limit(5),
         Usuario.countDocuments()
     ])
     res.json({
@@ -27,12 +27,9 @@ const crearUsuario = async (req, res=response) => {
         }
         console.log('hola1');
         const usuario = new Usuario(req.body);
-        console.log('hola',usuario)
         //Encriptar contraseña
         const salt = bcrypt.genSaltSync();
         usuario.password = bcrypt.hashSync(password, salt);
-        console.log('hola2');
-        console.log('usuario',usuario)
         
         //Guardar usuario
         await usuario.save();
@@ -71,7 +68,14 @@ const actualizarUsuario = async (req, res = response) => {
                 })
             }
         }
-        campos.email = email;
+        if (usuarioDB.google) {
+            campos.email = email;
+        } else if (usuarioDB.email !== email) {
+            return res.status(400).json({
+                    ok: false,
+                    msg:'Usuarios de google no pueden hacer cambios de email'
+                })
+        }
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos,{new:true});
         console.log(usuarioActualizado)
         return res.json({

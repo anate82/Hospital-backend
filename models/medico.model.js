@@ -14,11 +14,11 @@ const MedicoSchema = mongoose.Schema({
         ref: 'Usuario',
         required:true
     },
-    hospital: [{
+    hospital: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Hospital',
         required:true
-    }]
+    }
 }, {collection:'medicos'})
 
 MedicoSchema.method('toJSON', function () {
